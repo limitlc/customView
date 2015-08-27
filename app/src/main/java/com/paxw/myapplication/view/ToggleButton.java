@@ -1,5 +1,4 @@
 package com.paxw.myapplication.view;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,39 +6,40 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-
 import com.paxw.myapplication.R;
-
-/**
- * Created by Administrator on 2015/8/26 0026.
- */
 public class ToggleButton extends View{
     public ToggleButton(Context context) {
         super(context);
+        init();
     }
 
     public ToggleButton(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public ToggleButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
-   private  Bitmap mToggleBitmap;
-   private  Bitmap  slideButtonBackgroundBitmap;
+    private void init(){
+        setToggleButtonBackground(R.drawable.switch_background);
+        setSlideButtonBackgroundResource(R.drawable.slide_button_background);
+    }
+    private  Bitmap mToggleBitmap;
+    private  Bitmap  slideButtonBackgroundBitmap;
     private boolean currentState = false;
     private boolean isSliding = false;
     private  int currentX;
     private OnToggleButtonStateChangedListener listener;
     public void setToggleButtonBackground(int resid){
-
         mToggleBitmap = BitmapFactory.decodeResource(getResources(), resid);
     }
     public void setSlideButtonBackgroundResource(int slideButtonBackground) {
         slideButtonBackgroundBitmap = BitmapFactory.decodeResource(getResources(), slideButtonBackground);
     }
-    public void setToggleState(boolean b) {
-        currentState = b;
+    public void setToggleState(boolean state) {
+        currentState = state;
     }
 
     @Override
@@ -101,5 +101,8 @@ public class ToggleButton extends View{
     }
     public interface OnToggleButtonStateChangedListener{
         public void onToggleButtonStateChanged();
+    }
+    public boolean getCurrentState(){
+        return currentState;
     }
 }
