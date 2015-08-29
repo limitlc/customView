@@ -5,10 +5,16 @@ import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import com.paxw.myapplication.banner.bean.BaseBannerBean;
+import com.paxw.myapplication.utils.GetBannerData;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -17,7 +23,7 @@ public class BannerBaseView extends RelativeLayout implements BannerViewBehavior
 	/**
 	 * banner默认高宽比  height/width = 420/640
 	 */
-	private static final float BANNER_RATIO_DEFAULT = 0.65625f;
+	private static final float BANNER_RATIO_DEFAULT = 0.599f;
 
 	/**
 	 * indicator默认高宽比  height/width = 26/750
@@ -30,7 +36,7 @@ public class BannerBaseView extends RelativeLayout implements BannerViewBehavior
 	private static final int BANNER_CUT_TIME_DEFAULT = 4000;
 	
 	private LoopViewPager mViewPager;
-	
+
 	public LoopViewPager getViewPager() {
 		return mViewPager;
 	}
@@ -41,10 +47,10 @@ public class BannerBaseView extends RelativeLayout implements BannerViewBehavior
 	private Handler cutHandler;
 	private Runnable cutRunnable;
 	//private ResponseDataList bannerData;
-	private Object bannerData;
+	private List<BaseBannerBean> bannerData;
 	private int cutIndex;
 	private Context context;
-	
+
 	public BannerBaseView(Context context) {
 
 		this(context, null);
@@ -83,28 +89,12 @@ public class BannerBaseView extends RelativeLayout implements BannerViewBehavior
 	//传进来数据
 	@Override
 	public void update(Object _data) {
-//		if(_data instanceof DataBanner) {
-//			DataBanner banner = (DataBanner) _data;
-//			mAdapter = new BannerAdapter(banner.getBannerMessage().getData());
-//		} else {
-////			bannerData = (ResponseDataList) _data;
-////			if(bannerData == null || bannerData.getItems() == null || bannerData.getItems().size() <= 0) {
-////				return;
-////			}
-//			bannerData = (ResponseTopicData ) _data;
-////			ArrayList<TopicItem> items= new ArrayList<TopicItem>();
-////			if (bannerData.getDataArr().size()>0) {
-////				for (int i = 0; i < 3; i++) {
-////					items.add(bannerData.getDataArr().get(i));
-////				}
-////			}
-//
-//
-//			mAdapter = new MainHeaderAdapter(getContext(), bannerData.getDataArr());
-//		}
+		bannerData = (List<BaseBannerBean>) _data;
+		mAdapter = new BannerAdapter(GetBannerData.getBannerData());
 		mViewPager.setAdapter(mAdapter);
 		mIndicator.setViewPager(mViewPager);
 		initCutHandler();
+		return;
 	}
 
 	@Override
@@ -120,11 +110,7 @@ public class BannerBaseView extends RelativeLayout implements BannerViewBehavior
 				
 				@Override
 				public void run() {
-					if (mAdapter == null || bannerData == null
-//							||
-//							bannerData.getDataArr() == null ||
-//							bannerData.getDataArr().size() <=0
-							) {
+					if (mAdapter == null || bannerData == null ||bannerData.size() <= 0) {
 						return;
 					}
 					if(cutIndex == mAdapter.getCount() - 1) {
@@ -212,18 +198,17 @@ public class BannerBaseView extends RelativeLayout implements BannerViewBehavior
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) { 
             ImageView imageView = new ImageView(getContext());
-//            final BannerData d = datas.get(position);
-//            ImageUtil.displayImage(d.getImageUrlApp(), imageView);
-//            ((ViewPager)container).addView(imageView, position);
-//            imageView.setOnClickListener(new OnClickListener() {
-//
-//				@Override
-//				public void onClick(View v) {
-//					ActionWebView actionWebView = new ActionWebView(ApiEngine.BASE_TOPIC_DETAIL_URL + d.getActionValue()
-//							, d.getTitle(), Constant.ACTION_WEBVIEW_MEANS_PUSH, false, false);
-//					CommonUtil.doAction(v, actionWebView);
-//				}
-//			});
+            final BaseBannerBean d = (BaseBannerBean) datas.get(position);
+			Picasso.with(context).load(d.getUrl()).into(imageView);
+			Log.e("-----------", "" + position);
+//			((ViewPager)container).addView(imageView, position);
+			((ViewPager)container).addView(imageView);
+			imageView.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Toast.makeText(context,d.getUrl(),0).show();
+				}
+			});
             return imageView;
 		}
 		
